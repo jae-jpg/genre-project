@@ -5,23 +5,39 @@ import React from 'react'
 import Page from './Page'
 import Graph from './Graph'
 
-const data = [
-    { name: 'R&B', size: 5 },
-    { name: 'Hip-hop', size: 10 },
-    { name: 'Jazz', size: 2 },
-    { name: 'Funk', size: 3 },
-    { name: 'Rock', size: 7 },
-    { name: 'Country', size: 6 },
-    { name: 'Electronic', size: 4 },
-    { name: 'Pop', size: 8 },
-    { name: 'Avant-garde', size: 1 },
-    { name: 'Vocal', size: 1 },
-]
 
-const Home = () => (
-    <Page>
-        <Graph data={data} />
-    </Page>
-)
+class Home extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            genres: [],
+        }
+    }
+
+    componentDidMount() {
+        fetch('http://localhost:8080/api/genres')
+        .then((response) => {
+            response.json().then(data => {
+                console.log('settting genres state to: ', data)
+                this.setState({genres: data})
+            })
+        })
+    }
+
+    render() {
+        if (!this.state.genres.length) {
+            console.log('hello')
+            return (<></>)
+        } else {
+            console.log(this.state.genres)
+            return (
+                <Page>
+                    <Graph data={this.state.genres} />
+                </Page>            
+            )            
+        }
+    }
+}
+
 
 export default Home
