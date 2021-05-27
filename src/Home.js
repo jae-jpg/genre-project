@@ -25,10 +25,8 @@ class Home extends React.Component {
 
     render() {
         if (!this.state.genres.length) {
-            console.log('hello')
             return <Page />
         } else {
-            console.log(this.state.genres)
             return (
                 <Page>
                     <Graph data={this.state.genres} />

@@ -5,6 +5,7 @@ const port = 8080;
 const cors = require('cors')
 const {Genre, GenreRelationship} = require('./db')
 const {Op} = require('sequelize')
+const axios = require('axios')
 
 app.use(express.static('public', {index: false}))
 app.use(cors())
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
     // res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
+// TODO: Make a real serializer
 app.get('/api/genres', (req, res) => {
     Genre.findAll({
         where: {
@@ -29,7 +31,8 @@ app.get('/api/genres', (req, res) => {
         const genres = results.map(genre => {
             return {
                 name: genre.displayName,
-                size: Math.random() * 5 + 1
+                size: Math.random() * 5 + 1,
+                wikiUrl: genre.wikUrl,
             }
         })
     
@@ -65,10 +68,24 @@ app.get('/api/genres/:genre', (req, res) => {
                 const genres = results.map(genre => {
                     return {
                         name: genre.displayName,
-                        size: Math.random() * 5 + 1
+                        size: Math.random() * 5 + 1,
+                        wikiUrl: genre.wikiUrl,
                     }
-                })            
-                res.send(genres)
+                })
+
+                const wikiUrl = `https://en.wikipedia.org/${genre.wikiUrl}`
+                axios.get(wikiUrl)
+                .then(response => {
+                    const wikiContent = response.data
+
+                    res.send({
+                        genres: genres,
+                        wikiContent: wikiContent
+                    })
+                })
+                .catch(error => {
+                    console.log(error)
+                })
             })
         })
     })
