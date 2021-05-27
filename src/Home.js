@@ -18,7 +18,6 @@ class Home extends React.Component {
         fetch('http://localhost:8080/api/genres')
         .then((response) => {
             response.json().then(data => {
-                console.log('settting genres state to: ', data)
                 this.setState({genres: data})
             })
         })
@@ -27,7 +26,7 @@ class Home extends React.Component {
     render() {
         if (!this.state.genres.length) {
             console.log('hello')
-            return (<></>)
+            return <Page />
         } else {
             console.log(this.state.genres)
             return (

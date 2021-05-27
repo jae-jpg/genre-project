@@ -13,7 +13,7 @@ class Graph extends React.Component {
       .force('collide', d3.forceCollide((d) => {
         return d.radius * 1.1
       }))
-    this.radiusScale = d3.scaleSqrt().domain([0, 10]).range([1, 180])
+    this.radiusScale = d3.scaleSqrt().domain([0, 10]).range([1, 150])
     this.data = props.data
 
     this.data.forEach(d => {
@@ -112,7 +112,7 @@ class Graph extends React.Component {
       .attr('text-anchor', 'middle')
       .attr('y', d => this.radiusScale(d.size) / 10)
       .attr('font-family', 'Poppins')
-      .attr('font-size', (d) => this.radiusScale(d.size) / 3)
+      .attr('font-size', (d) => this.radiusScale(d.size) / 5)
       .attr('fill', '#d0caf9')
   
     const ticked = () => {

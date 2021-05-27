@@ -15,24 +15,49 @@ const subgenres = [
     { name: 'Classic', size: 5 },
 ]
 
+class Genre extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            genre: props.match.params.genre,
+            genres: []
+        }
+    }
 
-const Genre = (props) => {
-    const genre = props.match.params.genre
-    return (
-    <Page>
-        <div style={{width: '100%', height: '100%', display: 'flex'}}>
-            <div style={{width: '25%'}}>
-                <GenreInfo genre={genre} />
-            </div>
-            <div style={{width: '50%'}}>
-                <Graph data={subgenres}/>
-            </div>
-            <div style={{width: '25%'}}>
-                <Artists />
-            </div>
-        </div>
+    componentDidMount() {
+        console.log('mounted state', this.state)
+        fetch(`http://localhost:8080/api/genres/${this.state.genre}`)
+        .then(response => {
+            response.json().then(data => {
+                this.setState({genres: data})
+            })
+        })
+    }
 
-    </Page>
-)}
+    render() {
+        if (!this.state.genres.length) {
+            return <Page />
+        } else {
+            return (
+                <Page>
+                <div style={{width: '100%', height: '100%', display: 'flex'}}>
+                    <div style={{width: '25%'}}>
+                        <GenreInfo genre={this.state.genre} />
+                    </div>
+                    <div style={{width: '50%'}}>
+                        {/* TODO: Allow "next" */}
+                        <Graph data={this.state.genres.slice(0, 10)}/>
+                    </div>
+                    <div style={{width: '25%'}}>
+                        <Artists />
+                    </div>
+                </div>
+        
+            </Page>            
+            )
+        }
+    }
+}
+
 
 export default Genre

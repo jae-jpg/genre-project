@@ -3,7 +3,8 @@ const path = require('path');
 const app = express();
 const port = 8080;
 const cors = require('cors')
-const {db, Genre} = require('./db')
+const {Genre, GenreRelationship} = require('./db')
+const {Op} = require('sequelize')
 
 app.use(express.static('public', {index: false}))
 app.use(cors())
@@ -25,7 +26,6 @@ app.get('/api/genres', (req, res) => {
             isTopLevel: true
         }
     }).then(results => {
-        console.log(results.toString())
         const genres = results.map(genre => {
             return {
                 name: genre.displayName,
@@ -37,7 +37,41 @@ app.get('/api/genres', (req, res) => {
     }).catch(err => {
         throw err
     })
+})
 
+// TODO: Add error handling
+app.get('/api/genres/:genre', (req, res) => {
+    // Find the parent Genre
+    Genre.findOne({
+        where: {
+            displayName: req.params.genre
+        }
+    }).then(genre => {
+        // Find the genre relationships with parent genre as parent
+        GenreRelationship.findAll({
+            where: {
+                parentId: genre.id
+            }
+        }).then(relationships => {
+            // Take relationships, and fetch the children
+            childIds = relationships.map(r => r.childId)
+            Genre.findAll({
+                where: {
+                    id: {
+                        [Op.in]: childIds
+                    }
+                }
+            }).then(results => {
+                const genres = results.map(genre => {
+                    return {
+                        name: genre.displayName,
+                        size: Math.random() * 5 + 1
+                    }
+                })            
+                res.send(genres)
+            })
+        })
+    })
 })
 
 app.listen(port, () => {
