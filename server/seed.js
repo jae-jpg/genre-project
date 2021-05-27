@@ -39,7 +39,7 @@ fs.readFile('data.csv', (err, fileData) => {
                         displayName: parentName
                     }
                 }).then(parent => {
-                    if (!parent) {
+                    if (!parent && !row.topLevel) {
                         genre = Genre.build({
                             displayName: parentName,
                             wikiName: parentName,

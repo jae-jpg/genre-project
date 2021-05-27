@@ -42,52 +42,44 @@ app.get('/api/genres', (req, res) => {
     })
 })
 
-// TODO: Add error handling
+/**
+ * Get all child genres for :genre
+ */
 app.get('/api/genres/:genre', (req, res) => {
-    // Find the parent Genre
+    // Find the parent Genre and eager load all child Genres
     Genre.findOne({
         where: {
             displayName: req.params.genre
-        }
-    }).then(genre => {
-        // Find the genre relationships with parent genre as parent
-        GenreRelationship.findAll({
-            where: {
-                parentId: genre.id
+        },
+        include: {
+            association: 'Children',
+            as: 'Children',
+        },
+    }).then(parentGenre => {
+        // Serialize child genres
+        const childGenres = parentGenre.dataValues.Children.map(childGenre => {
+            return {
+                name: childGenre.displayName,
+                size: Math.random() * 5 + 1,
+                wikiUrl: childGenre.wikiUrl,
             }
-        }).then(relationships => {
-            // Take relationships, and fetch the children
-            childIds = relationships.map(r => r.childId)
-            Genre.findAll({
-                where: {
-                    id: {
-                        [Op.in]: childIds
-                    }
-                }
-            }).then(results => {
-                const genres = results.map(genre => {
-                    return {
-                        name: genre.displayName,
-                        size: Math.random() * 5 + 1,
-                        wikiUrl: genre.wikiUrl,
-                    }
-                })
+        })
 
-                const wikiUrl = `https://en.wikipedia.org/${genre.wikiUrl}`
-                axios.get(wikiUrl)
-                .then(response => {
-                    const wikiContent = response.data
+        // Request Wikipedia page for parent genre
+        const wikiUrl = `https://en.wikipedia.org/${parentGenre.wikiUrl}`
+        axios.get(wikiUrl).then(response => {
+            const wikiContent = response.data
 
-                    res.send({
-                        genres: genres,
-                        wikiContent: wikiContent
-                    })
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+            res.send({
+                genres: childGenres,
+                wikiContent: wikiContent
             })
         })
+        .catch(err => {
+            console.log(err)
+        })
+    }).catch(err => {
+        console.log(err)
     })
 })
 

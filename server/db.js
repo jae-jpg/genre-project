@@ -94,8 +94,12 @@ const GenreRelationship = sequelize.define('GenreRelationship', {
 })
 
 Artist.belongsToMany(Genre, {through: 'AristGenre'})
-Genre.belongsToMany(Genre, { through: GenreRelationship, as: 'Parents', foreignKey: 'parentId' });
-Genre.belongsToMany(Genre, { through: GenreRelationship, as: 'Children', foreignKey: 'childId' });
+// A parent Genre belongs to many child Genres. The result rows are Children. The foreignKey back to self is parentId.
+Genre.belongsToMany(Genre, { through: GenreRelationship, as: 'Children', foreignKey: 'parentId' });
+// A child Genre belongs to many parent Genres. The result rows are Parents. The foreignKey back to self is childId.
+Genre.belongsToMany(Genre, { through: GenreRelationship, as: 'Parents', foreignKey: 'childId' });
+// GenreRelationship.hasMany(Genre, {as: 'Child'})
+// GenreRelationship.hasMany(Genre, {as: 'Parent'})
 
 module.exports = {
     'db': sequelize,
