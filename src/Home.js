@@ -18,7 +18,11 @@ class Home extends React.Component {
         fetch('http://localhost:8080/api/genres')
         .then((response) => {
             response.json().then(data => {
-                this.setState({genres: data})
+                this.setState({
+                    genres: data.genres,
+                    minChildren: data.minChildren,
+                    maxChildren: data.maxChildren,
+                })
             })
         })
     }
@@ -29,7 +33,7 @@ class Home extends React.Component {
         } else {
             return (
                 <Page>
-                    <Graph data={this.state.genres} />
+                    <Graph genres={this.state.genres} minChildren={this.state.minChildren} maxChildren={this.state.maxChildren} />
                 </Page>            
             )            
         }

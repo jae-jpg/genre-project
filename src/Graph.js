@@ -13,10 +13,10 @@ class Graph extends React.Component {
       .force('collide', d3.forceCollide((d) => {
         return d.radius * 1.1
       }))
-    this.radiusScale = d3.scaleSqrt().domain([0, 10]).range([1, 150])
-    this.data = props.data
+    this.radiusScale = d3.scaleSqrt().domain([props.minChildren, props.maxChildren]).range([1, 120])
+    this.genres = props.genres
 
-    this.data.forEach(d => {
+    this.genres.forEach(d => {
       d.radius = this.radiusScale(d.size)
     })
 
@@ -84,7 +84,7 @@ class Graph extends React.Component {
 
     const containers = d3
       .selectAll('a.circle')
-      .data(this.data)
+      .data(this.genres)
       .append('svg')
       .attr('overflow', 'visible')
       
@@ -128,20 +128,20 @@ class Graph extends React.Component {
           })
       }
       
-    this.antiCollide.nodes(this.data)
+    this.antiCollide.nodes(this.genres)
       .on('tick', ticked)
 
   }
   
   redrawForce = () => {
-    this.antiCollide.force('collide').initialize(this.data)
+    this.antiCollide.force('collide').initialize(this.genres)
     this.antiCollide.restart()
   }
 
   render() {
     return (
       <svg id="container" style={{height: '100%', width: '100%'}}>
-        {this.data.map(d => (
+        {this.genres.map(d => (
           <Link
             key={d.name}
             to={`/genre/${d.name}`}

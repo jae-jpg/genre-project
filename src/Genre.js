@@ -46,6 +46,8 @@ class Genre extends React.Component {
                 this.setState({
                     ...this.state,
                     genres: data.genres,
+                    minChildren: data.minChildren,
+                    maxChildren: data.maxChildren,
                     genreInfo: paragraphs,
                 })
             })
@@ -64,7 +66,7 @@ class Genre extends React.Component {
                     </div>
                     <div style={{width: '50%'}}>
                         {/* TODO: Allow "next" */}
-                        {this.state.genres && <Graph data={this.state.genres.slice(0, 10)}/>}
+                        {this.state.genres && <Graph genres={this.state.genres.slice(0, 10)} minChildren={this.state.minChildren} maxChildren={this.state.maxChildren}/>}
                         
                     </div>
                     <div style={{width: '25%'}}>

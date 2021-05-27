@@ -15,6 +15,33 @@ app.get('/', (req, res) => {
     // res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
+const serializeGenres = (results) => {
+    const genres = results.map(genre => {
+        const numChildren = genre.Children.length
+        return {
+            name: genre.displayName,
+            size: numChildren + 1,
+            wikiUrl: genre.wikUrl,
+            numChildren: numChildren
+        }
+    }).sort((a, b) => {
+        if (a.numChildren > b.numChildren) return -1
+        else return 1 
+    })
+
+    const stats = genres.reduce((acc, genre) => {
+        if (!acc.minChildren || genre.numChildren < acc.minChildren) acc.minChildren = genre.numChildren
+        if (!acc.maxChildren || genre.numChildren > acc.maxChildren) acc.maxChildren = genre.numChildren
+        return acc
+    }, {minChidren: null, maxChildren: null})
+
+    return {
+        genres: genres,
+        minChildren: stats.minChidren,
+        maxChildren: stats.maxChildren,
+    }
+}
+
 // TODO: Make a real serializer
 app.get('/api/genres', (req, res) => {
     Genre.findAll({
@@ -25,20 +52,7 @@ app.get('/api/genres', (req, res) => {
             association: 'Children',
         },
     }).then(results => {
-        const genres = results.map(genre => {
-            const numChildren = genre.Children.length
-            return {
-                name: genre.displayName,
-                size: numChildren + 1,
-                wikiUrl: genre.wikUrl,
-                numChildren: numChildren
-            }
-        }).sort((a, b) => {
-            if (a.numChildren > b.numChildren) return -1
-            else return 1 
-        })
-    
-        res.send(genres)
+        res.send(serializeGenres(results))
     }).catch(err => {
         throw err
     })
@@ -62,29 +76,18 @@ app.get('/api/genres/:genre', (req, res) => {
         },
     }).then(parentGenre => {
         // Serialize child genres
-        const childGenres = parentGenre.dataValues.Children.map(childGenre => {
-            const numChildren = childGenre.Children.length
-            return {
-                name: childGenre.displayName,
-                size: numChildren + 1,
-                wikiUrl: childGenre.wikiUrl,
-                numChildren: numChildren,
-            }
-        }).sort((a, b) => {
-            if (a.numChildren > b.numChildren) return -1
-            else return 1
-        })
-        
+        const serializedGenres = serializeGenres(parentGenre.dataValues.Children)
 
         // Request Wikipedia page for parent genre
         const wikiUrl = `https://en.wikipedia.org/${parentGenre.wikiUrl}`
         axios.get(wikiUrl).then(response => {
             const wikiContent = response.data
 
-            res.send({
-                genres: childGenres,
-                wikiContent: wikiContent
-            })
+            res.send(
+                Object.assign(
+                    serializedGenres, {wikiContent: wikiContent}
+                )
+            )
         })
         .catch(err => {
             console.log(err)
