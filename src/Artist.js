@@ -9,7 +9,7 @@ const Artist = (props) => {
     <Page>
         <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'row', padding: 100, paddingRight: 0, boxSizing: 'border-box'}}>
             <div style={{display: 'flex', flexDirection: 'column', width: '50%', overflow: 'scroll'}}>
-                <img style={{height: 250, width: 250, borderRadius: '50%', height: '300px', marginRight: 36}} src={ambre} />
+                <img style={{height: 250, width: 250, borderRadius: '50%', marginRight: 36}} src={ambre} alt="ambré" />
                 <h1 style={{marginBottom: 0, marginTop: 20, fontSize: 72}}>Ambré</h1>
                 <div>
                     <p>India Ambré Perkins, known mononymously as Ambré, is an American singer and songwriter. She is currently signed to Roc Nation. She has released two full-length projects with Wanderlust (2015) and 2090's (2016). Her debut major label EP, Pulp, was released in November 2019, by Roc Nation. She first gained recognition after collaborating with Kehlani on a cover of Drake's "Preach" in 2015. She also co-wrote two tracks ("Changes" and "U") off of H.E.R.'s 2017 self-titled album, which was nominated for multiple Grammy Awards.</p>
@@ -37,7 +37,7 @@ const Artist = (props) => {
                         <h1 style={style}>Vocal</h1>
                     </div>
                 </div>
-                <iframe src="https://open.spotify.com/embed/album/5QgT71gBaAQGuBO8MEF9XK" width="320" height="400" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                <iframe src="https://open.spotify.com/embed/album/5QgT71gBaAQGuBO8MEF9XK" width="320" height="400" frameborder="0" allowtransparency="true" allow="encrypted-media" title="ambré"></iframe>
             </div>
         </div>
     </Page>

@@ -27,7 +27,7 @@ const Artist = ({delay}) => (
             transition={{duration: 2, delay: .25 + delay}}
             style={{display: 'flex', marginBottom: '24px'}}
         >
-            <img style={{borderRadius: '50%', height: '100px', marginRight: '8px'}} src={ambre} />
+            <img style={{borderRadius: '50%', height: '100px', marginRight: '8px'}} src={ambre} alt="ambré"/>
             <p style={{fontSize: '12px', marginTop: 0}}>India Ambré Perkins, known mononymously as Ambré, is an American singer and songwriter. She is currently signed to Roc Nation. She first gained recognition after collaborating with Kehlani on a cover of Drake's "Preach" in 2015.</p>
         </motion.div>
     </Link>

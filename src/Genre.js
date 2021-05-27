@@ -8,13 +8,6 @@ import Graph from './Graph'
 import GenreInfo from './GenreInfo'
 import Artists from './Artists'
 
-const subgenres = [
-    { name: 'Modern', size: 6 },
-    { name: 'Alternative', size: 2 },
-    { name: 'Jazz', size: 3 },
-    { name: 'Neo Soul', size: 7 },
-    { name: 'Classic', size: 5 },
-]
 
 class Genre extends React.Component {
     constructor(props) {
@@ -40,7 +33,7 @@ class Genre extends React.Component {
                 let startParagraphs = false
                 for (let i = 0; i < content.length; i++) {
                     const el = content[i]
-                    if (el.localName != 'p') {
+                    if (el.localName !== 'p') {
                         if (startParagraphs) break
                         continue
                     } else {
