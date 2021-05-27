@@ -3,18 +3,12 @@ const path = require('path');
 const app = express();
 const port = 8080;
 const cors = require('cors')
-const {Genre, GenreRelationship} = require('./db')
+const {Genre} = require('./db')
 const {Op} = require('sequelize')
 const axios = require('axios')
 
 app.use(express.static('public', {index: false}))
 app.use(cors())
-
-// db.sync().then(() => {
-//     console.log('DB synced my guy')
-// }).catch(() => {
-//     console.log('Try something else brudda')
-// })
 
 app.get('/', (req, res) => {
     res.sendStatus(200);
@@ -26,14 +20,22 @@ app.get('/api/genres', (req, res) => {
     Genre.findAll({
         where: {
             isTopLevel: true
-        }
+        },
+        include: {
+            association: 'Children',
+        },
     }).then(results => {
         const genres = results.map(genre => {
+            const numChildren = genre.Children.length
             return {
                 name: genre.displayName,
-                size: Math.random() * 5 + 1,
+                size: numChildren + 1,
                 wikiUrl: genre.wikUrl,
+                numChildren: numChildren
             }
+        }).sort((a, b) => {
+            if (a.numChildren > b.numChildren) return -1
+            else return 1 
         })
     
         res.send(genres)
@@ -46,24 +48,33 @@ app.get('/api/genres', (req, res) => {
  * Get all child genres for :genre
  */
 app.get('/api/genres/:genre', (req, res) => {
-    // Find the parent Genre and eager load all child Genres
+    // Find the parent Genre and eager load all of its children
     Genre.findOne({
         where: {
             displayName: req.params.genre
         },
         include: {
             association: 'Children',
-            as: 'Children',
+            // For sorting purposes we need to count the number of children that each child has, so eager load all children's children
+            include: {
+                association: 'Children',
+            }
         },
     }).then(parentGenre => {
         // Serialize child genres
         const childGenres = parentGenre.dataValues.Children.map(childGenre => {
+            const numChildren = childGenre.Children.length
             return {
                 name: childGenre.displayName,
-                size: Math.random() * 5 + 1,
+                size: numChildren + 1,
                 wikiUrl: childGenre.wikiUrl,
+                numChildren: numChildren,
             }
+        }).sort((a, b) => {
+            if (a.numChildren > b.numChildren) return -1
+            else return 1
         })
+        
 
         // Request Wikipedia page for parent genre
         const wikiUrl = `https://en.wikipedia.org/${parentGenre.wikiUrl}`

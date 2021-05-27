@@ -108,7 +108,7 @@ class Graph extends React.Component {
 
     containers
       .append('text')
-      .text((d) => d.name)
+      .text((d) => `${d.name} (${d.numChildren})`)
       .attr('text-anchor', 'middle')
       .attr('y', d => this.radiusScale(d.size) / 10)
       .attr('font-family', 'Poppins')

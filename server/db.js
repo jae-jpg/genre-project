@@ -1,6 +1,9 @@
-const { Sequelize, DataTypes, INTEGER } = require('sequelize');
+const { Sequelize, DataTypes, INTEGER } = require('sequelize')
 
-const sequelize = new Sequelize('postgresql://localhost:5432/genre-project')
+const sequelize = new Sequelize(
+    'postgresql://localhost:5432/genre-project',
+    {logging: false}
+)
 
 const Genre = sequelize.define('Genre', {
     displayName: {
@@ -35,9 +38,7 @@ const Genre = sequelize.define('Genre', {
         allowNull: false,
         defaultValue: false,
     },
-}, {
-    // Other model options go here
-});
+})
 
 const Artist = sequelize.define('Artist', {
     displayName: {
