@@ -14,7 +14,7 @@ const App = () => {
     <AnimatePresence exitBeforeEnter>
       <Switch location={location} key={location.pathname}>
         <Route path="/genre/:genre" component={Genre} />
-        <Route path="/artist/:artist" component={Artist} />
+        <Route path="/artist/:artistId" render={(props) => <Artist {...props}/>} />
         <Route path="/" component={Home} />
       </Switch>
     </AnimatePresence>

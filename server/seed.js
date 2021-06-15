@@ -37,36 +37,41 @@ const seedDb = () => {
         if (err) throw err;
         parse(fileData, {columns: true}, (parseErr, rows) => {
             rows.forEach(row => {
-                // Try to find existing database instance of genre
-                Genre.findOne({
-                    where: {
-                        displayName: row.wikiName
-                    }
-                }).then(genre => {
-                    // If genre doesn't exist, create it with all known properties
-                    if (!genre) {
-                        genre = Genre.build({
-                            displayName: row.wikiName,
-                            wikiName: row.wikiName,
-                            wikiUrl: row.wikiLink,
-                            isTopLevel: row.isTopLevel === 'TRUE' ? true : false,
-                        })
-                        // Ensure genre has and is associated with parent
-                        genre.save().then(genre => {
-                            ensureParent(genre, row.parentName, row.isTopLevel)
-                        })
-                    // If genre does exist (we could have partially built it if it was a parent to another genre), ensure all properties
-                    } else {
-                        if (!genre.wikiUrl) {
-                            genre.wikiUrl = row.wikiLink
-                            genre.isTopeLevel = row.isTopLevel === 'TRUE' ? true : false
-                            // Ensure genre has and is associated with parent
+                const shouldIgnore = row.regional === 'TRUE' || row.elim === "TRUE" || row.radioFormat === "TRUE"
+                if (!shouldIgnore) {
+                    // Try to find existing database instance of genre
+                    Genre.findOne({
+                        where: {
+                            displayName: row.wikiName
+                        }
+                    }).then(genre => {
+                        // If genre doesn't exist, create it with all known properties
+                        if (!genre) {
+                            genre = Genre.build({
+                                displayName: row.wikiName,
+                                wikiName: row.wikiName,
+                                wikiUrl: row.wikiLink,
+                                spotifyName: row.spotifyName,
+                                isTopLevel: row.isTopLevel === 'TRUE' ? true : false,
+                            })
+                            // Ensure genre has, and is associated with, parent
                             genre.save().then(genre => {
                                 ensureParent(genre, row.parentName, row.isTopLevel)
                             })
+                        // If genre does exist (we could have partially built it if it was a parent to another genre), ensure all properties
+                        } else {
+                            if (!genre.wikiUrl) {
+                                genre.wikiUrl = row.wikiLink
+                                genre.isTopeLevel = row.isTopLevel === 'TRUE' ? true : false
+                                genre.spotifyName = row.spotifyName
+                                // Ensure genre has and is associated with parent
+                                genre.save().then(genre => {
+                                    ensureParent(genre, row.parentName, row.isTopLevel)
+                                })
+                            }
                         }
-                    }
-                })
+                    })
+                }
             })
         })
     })

@@ -16,6 +16,9 @@ class Genre extends React.Component {
             genre: props.match.params.genre,
             genres: [],
             genreInfo: [],
+            maxChildren: 0,
+            minChildren: 0,
+            artists: [],
         }
     }
 
@@ -39,7 +42,7 @@ class Genre extends React.Component {
                     } else {
                         if (el.innerHTML.length <= 2) continue
                         startParagraphs = true
-                        paragraphs.push(sanitizeHtml(el.innerHTML, {allowedTags: []}))
+                        paragraphs.push(sanitizeHtml(el.innerHTML, {allowedTags: []}).replace(/\[\d+\]/g, ''))
                     }
                 }
                 
@@ -49,6 +52,7 @@ class Genre extends React.Component {
                     minChildren: data.minChildren,
                     maxChildren: data.maxChildren,
                     genreInfo: paragraphs,
+                    artists: data.artists
                 })
             })
         })
@@ -70,7 +74,7 @@ class Genre extends React.Component {
                         
                     </div>
                     <div style={{width: '25%'}}>
-                        <Artists />
+                        <Artists artists={this.state.artists}/>
                     </div>
                 </div>
         

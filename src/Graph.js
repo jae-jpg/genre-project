@@ -13,7 +13,7 @@ class Graph extends React.Component {
       .force('collide', d3.forceCollide((d) => {
         return d.radius * 1.1
       }))
-    this.radiusScale = d3.scaleSqrt().domain([props.minChildren, props.maxChildren]).range([1, 120])
+    this.radiusScale = d3.scaleSqrt().domain([props.minChildren, props.maxChildren]).range([1, 150])
     this.genres = props.genres
 
     this.genres.forEach(d => {
