@@ -100,7 +100,9 @@ app.get('/api/genres/:genre', (req, res) => {
                 url,
                 {headers: {'Authorization': `Bearer ${spotify.accessToken}`}}
             ).then(response => {
-                const artists = response.data.artists.items.map(artist => {
+                const artists = response.data.artists.items.filter(artist => {
+                    return artist.genres.includes(parentGenre.spotifyName)
+                }).map(artist => {
                     return {
                         name: artist.name,
                         popularity: artist.popularity,
