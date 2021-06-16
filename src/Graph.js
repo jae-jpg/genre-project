@@ -6,14 +6,32 @@ import { Link, withRouter } from 'react-router-dom'
 class Graph extends React.Component {
   constructor(props) {
     super(props)
+    // Are we on the home page? If so:
+      // - use a larger scale because there is greater variance in the number of subgenres.
+      // - center the graph lower down on the page TODO: revisit whether this is correct/necessary
+      // - spread the out more horizontally since there is more space on the page (no description/artist list)
+    const numChildrenRange = props.maxChildren - props.minChildren
+    let range
+    if (props.location.pathname === '/') {
+      range = [40, 150]
+    } else if (numChildrenRange === 0) {
+      range = [100, 100]
+    } else if (numChildrenRange > 6) {
+      range = [20, 160]
+    } else {
+      range = [20, 100 + numChildrenRange * 5]
+    }
+
     const [x, y] = props.location.pathname === '/' ? [880, 500] : [480, 500]
+    const [xForce, yForce] = props.location.pathname === '/' ? [0.065, 0.15] : [0.05, 0.05]
+
     this.antiCollide = d3.forceSimulation()
-      .force('x', d3.forceX(x).strength(0.05))
-      .force('y', d3.forceY(y).strength(0.05))
+      .force('x', d3.forceX(x).strength(xForce))
+      .force('y', d3.forceY(y).strength(yForce))
       .force('collide', d3.forceCollide((d) => {
         return d.radius * 1.1
       }))
-    this.radiusScale = d3.scaleSqrt().domain([props.minChildren, props.maxChildren]).range([1, 150])
+    this.radiusScale = d3.scaleSqrt().domain([props.minChildren, props.maxChildren]).range(range)
     this.genres = props.genres
 
     this.genres.forEach(d => {
@@ -108,13 +126,22 @@ class Graph extends React.Component {
 
     containers
       .append('text')
-      .text((d) => `${d.name} (${d.numChildren})`)
+      .text((d) => d.name)
       .attr('text-anchor', 'middle')
-      .attr('y', d => this.radiusScale(d.size) / 10)
+      .attr('y', d => this.radiusScale(d.size) / 15)
       .attr('font-family', 'Poppins')
       .attr('font-size', (d) => this.radiusScale(d.size) / 5)
       .attr('fill', '#d0caf9')
-  
+
+      containers
+      .append('text')
+      .text((d) => `${d.numChildren} subgenres`)
+      .attr('text-anchor', 'middle')
+      .attr('y', d => this.radiusScale(d.size) / 3.5)
+      .attr('font-family', 'Poppins')
+      .attr('font-size', (d) => this.radiusScale(d.size) / 10)
+      .attr('fill', '#d0caf9')      
+
     const ticked = () => {
         containers
           .attr('x', (d) => {

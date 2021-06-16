@@ -14,7 +14,7 @@ const GenreInfo = ({ genre, genreInfo }) => {
             boxSizing: 'border-box',
         }}
     >
-        <h1 style={{marginTop: 0, marginBottom: 20, fontSize: '72px'}}>{genre}</h1>
+        <h1 style={{marginTop: 0, marginBottom: 20, fontSize: '72px', whiteSpace: 'nowrap'}}>{genre}</h1>
         <div style={{fontSize: '14px', overflow: 'scroll', height: '80%'}}>
             {genreInfo.map((paragraph, i) => (
                 <p key={i}>{paragraph}</p>
